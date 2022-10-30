@@ -1,6 +1,4 @@
 
-
-
 class Faction():
    
     def __init__(self,numberofunits,attackpoint,healthpoint,unitregenerationnumber,name="Default"):
