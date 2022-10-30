@@ -1,3 +1,6 @@
+
+
+
 class Faction():
    
     def __init__(self,numberofunits,attackpoint,healthpoint,unitregenerationnumber,name="Default"):
@@ -8,28 +11,21 @@ class Faction():
         self.unitregenerationnumber=unitregenerationnumber
         self.total_health=self.numberofunits*self.healthpoint
         self.alive=alive=True if self.numberofunits*self.healthpoint >0 else False
+    #Some attributes initially introduced.
 
     def AssgnEnemies(self,enemy_name1,enemy_name2):
         self.firstEnemy = enemy_name1
         self.secondEnemy = enemy_name2
-        
-        
-        
-    # def PerformAttack(self):
-    #     self.firstEnemy.ReceiveAttack(self,self.attackpoint)
-    #     return
-        
-    # def ReceiveAttack(self,damage):
-    #     self.total_health=self.total_health-damage
-    #     return self.total_health
-    # def PurchaseWeapons(self):
-    #     pass
-    # def PurchaseArmors(self):
-    #     pass
+    #Enemies are assigned.
+
     def aliveness(self):
         return self.alive
+    #Return aliveness
+
     def Print(self):
         print("Faction Name: ",self.name,"\n","Status: ",format("Alive" if self.alive else "Defeated"),"\n","Number of Units: ",self.numberofunits,"\n","Attack Point: ",self.attackpoint,"\n","Health Point: ",self.healthpoint,"\n","Unit Regen Number: ",self.unitregenerationnumber,"\n","Total Faction Health:",self.total_health)        
+    #Print Faction information
+
     def EndTurn(self):
         if self.numberofunits<=0 or self.total_health<=0:
             self.numberofunits=0
@@ -37,6 +33,7 @@ class Faction():
             self.alive=False
             
         return self.numberofunits,self.total_health
+        #Endturn
 
 
 class Dwarves(Faction):
@@ -55,11 +52,12 @@ class Dwarves(Faction):
             self.secondEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint)
         else:
             print("All Enemies Dead")  
-        
+        #Performing attack
         
     def Print(self):
         print("Taste the power of our axes!")
         return super().Print()
+
     def ReceiveAttack(self,attacker,damage):
         self.numberofunits=self.numberofunits-(damage/self.healthpoint)
         if type(attacker)==Orcs:
@@ -67,7 +65,12 @@ class Dwarves(Faction):
         elif type(attacker)==Elves:
             print("Dwarvevs have received attack from Elves")
         self.total_health=self.numberofunits*self.healthpoint
-        
+        if self.numberofunits<=0 or self.total_health<=0:
+            self.numberofunits=0
+            self.total_health=0
+            self.alive=False
+        #Receiving Attack
+
     def PurchaseArmors(self,armor_point,merchant):
         gold=0
         if self.alive:
@@ -77,7 +80,7 @@ class Dwarves(Faction):
         else:
             print("Armor not sold to Dwarves")
         merchant.SellArmors(self.alive,armor_point,gold)
-
+        #Purchasing Armor
         
     def PurchaseWeapons(self,weapon_point,merchant):
         gold=0
@@ -88,6 +91,7 @@ class Dwarves(Faction):
         else:
             print("Weapon not sold to Dwarves")
         merchant.SellWeapons(self.alive,weapon_point,gold)
+        #Purchasing Weapon
 
 class Orcs(Faction):
     def __init__(self, numberofunits, attackpoint, healthpoint, unitregenerationnumber, name="Orcs"):
@@ -106,7 +110,8 @@ class Orcs(Faction):
         elif  not self.firstEnemy.aliveness() and self.secondEnemy.aliveness():
             self.secondEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint)
         else:
-            print("All Enemies Dead")  
+            print("All Enemies Dead") 
+
     def ReceiveAttack(self,attacker, damage):
         if type(attacker)==Dwarves:
             damage=damage*0.8
@@ -116,25 +121,30 @@ class Orcs(Faction):
             damage=damage*0.75
             self.numberofunits=self.numberofunits-(damage/self.healthpoint)
             print("Orcs have received attack from Elves")
+        
         self.total_health=self.numberofunits*self.healthpoint
+        if self.numberofunits<=0 or self.total_health<=0:
+            self.numberofunits=0
+            self.total_health=0
+            self.alive=False
     
     def Print(self):
         print("Stop runnig, you""ll only die tired!\n")
         return super().Print()
   
-    def PurchaseArmors(self,armor_point):
+    def PurchaseArmors(self,armor_point,merchant):
         gold=0
         
         if self.alive:
-            elf.healthpoint=self.healthpoint +3*armor_point
+            self.healthpoint=self.healthpoint +3*armor_point
             gold=armor_point*1
             print("Armor sold to Orcs")
         else:
             print("Armor not sold to Orcs")
-        Merchant.SellArmors(self.alive,armor_point,gold)
+        merchant.SellArmors(self.alive,armor_point,gold)
 
         
-    def PurchaseWeapons(self,weapon_point):
+    def PurchaseWeapons(self,weapon_point,merchant):
         gold=0
         
         if self.alive:
@@ -143,7 +153,7 @@ class Orcs(Faction):
             print("Weapon sold to Orcs")
         else:
             print("Weapon not sold to Orcs")
-        Merchant.SellWeapons(self.alive,weapon_point,gold)
+        merchant.SellWeapons(self.alive,weapon_point,gold)
         
 
 class Elves(Faction):
@@ -151,7 +161,7 @@ class Elves(Faction):
         super().__init__(numberofunits, attackpoint, healthpoint, unitregenerationnumber, name)
     
     def PerformAttack(self):
-        #if who?
+        
         if self.firstEnemy.aliveness() and self.secondEnemy.aliveness():
             if type(self.firstEnemy)== Orcs:
                 self.firstEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint*0.6)
@@ -182,6 +192,10 @@ class Elves(Faction):
             self.numberofunits=self.numberofunits-(damage/self.healthpoint)
             print("Elves have received attack from Dwarves")
         self.total_health=self.numberofunits*self.healthpoint
+        if self.numberofunits<=0 or self.total_health<=0:
+            self.numberofunits=0
+            self.total_health=0
+            self.alive=False
    
     def Print(self):
         print("You cannot reach our elegance.")
@@ -217,6 +231,8 @@ class Merchant():
     def __init__(self,starting_weapon_point=10,starting_armor_point=10):
         self.weapon_point=starting_weapon_point
         self.armor_point=starting_armor_point
+        self.starting_weapon_point=starting_weapon_point
+        self.starting_armor_point=starting_armor_point
         self.revenue=0
     
     def AssgnFactions(self,faction1_name,faction2_name):
@@ -235,6 +251,7 @@ class Merchant():
             self.weapon_point=self.weapon_point-weapon_value
             print("Weapons sold!")
             return True
+    #Selling Weapon
 
     def SellArmors(self,live,armor_value,gold):
         self.revenue=self.revenue+gold
@@ -248,42 +265,84 @@ class Merchant():
             self.armor_point=self.armor_point- armor_value
             print("Armors sold!")
             return True
+        #Selling Armor
+
     def Print(self):
         print("Profit: ",self.revenue,"")
 
     def EndTurn(self):
-        self.weapon_point=starting_weapon_point
-        self.armor_point=starting_armor_point
+        self.weapon_point= self.starting_weapon_point
+        self.armor_point= self.starting_armor_point
         print("Profit:",self.revenue)
     
-savasci= Orcs(50,30,150,10)
+savasci= Orcs(50,30,150,10)#defining objects
 navin=Dwarves(40,50,150,15)
+joker=Dwarves(60,50,80,15)
 thor=Elves(45,35,100,5)
 demirci=Merchant()
 
 
-# navin.AssgnEnemies(savasci, thor)
-# navin.Print()
-# navin.PerformAttack()
-# navin.PerformAttack()
-# navin.PerformAttack()
-# navin.PerformAttack()
-# navin.PerformAttack()
+navin.AssgnEnemies(savasci, thor)#Assign Enemies
+thor.AssgnEnemies(savasci,navin)
+thor.AssgnEnemies(navin,joker)
+savasci.AssgnEnemies(navin,thor)
+joker.AssgnEnemies(savasci,thor)
 
-# navin.EndTurn()
-# navin.Print()
-# savasci.EndTurn()
-# savasci.Print()
-# thor.EndTurn()
-# thor.Print()
-
-thor.PurchaseArmors(5,demirci)
-demirci.Print()
-thor.PurchaseArmors(6,demirci)
-demirci.Print()
-navin.PurchaseWeapons(7,demirci)
-demirci.Print()
+print("BAşlangıç")
+savasci.Print()
 thor.Print()
 navin.Print()
+joker.Print()
+demirci.Print()
 
+
+navin.PerformAttack()
+thor.PerformAttack()
+savasci.PerformAttack()
+navin.PerformAttack()
+thor.PerformAttack()
+savasci.PerformAttack()
+navin.PerformAttack()
+thor.PerformAttack()
+savasci.PerformAttack()
+joker.PerformAttack()
+
+joker.Print()
+savasci.Print()
+thor.Print()
+navin.Print()
+demirci.Print()
+
+savasci.EndTurn()
+thor.EndTurn()
+navin.EndTurn()
+demirci.EndTurn()
+joker.EndTurn()
+
+print("satın alımlar")
+
+savasci.PurchaseWeapons(2,demirci)
+thor.PurchaseArmors(5,demirci)
+thor.PurchaseWeapons(6,demirci)
+navin.PurchaseWeapons(7,demirci)
+
+savasci.Print()
+thor.Print()
+navin.Print()
+demirci.Print()
+
+navin.PerformAttack()
+thor.PerformAttack()
+savasci.PerformAttack()
+
+savasci.EndTurn()
+thor.EndTurn()
+navin.EndTurn()
+demirci.EndTurn()
+
+print("2.tur bitti")
+savasci.Print()
+thor.Print()
+navin.Print()
+demirci.Print()
 
