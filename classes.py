@@ -47,13 +47,14 @@ class Dwarves(Faction):
     
     def PerformAttack(self):
         if self.firstEnemy.aliveness() and self.secondEnemy.aliveness():
-            self.firstEnemy.ReceiveAttack(self,self.attackpoint/2)
-            self.secondEnemy.ReceiveAttack(self,self.attackpoint/2)
+            self.firstEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint/2)
+            self.secondEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint/2)
         elif self.firstEnemy.aliveness() and not self.secondEnemy.aliveness():
-            self.firstEnemy.ReceiveAttack(self,self.attackpoint)
+            self.firstEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint)
         elif  not self.firstEnemy.aliveness() and self.secondEnemy.aliveness():
-            self.secondEnemy.ReceiveAttack(self,self.attackpoint)
-        return
+            self.secondEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint)
+        else:
+            print("All Enemies Dead")  
         
         
     def Print(self):
@@ -65,6 +66,7 @@ class Dwarves(Faction):
             print("Dwarves have received attack from Orcs")
         elif type(attacker)==Elves:
             print("Dwarvevs have received attack from Elves")
+        self.total_health=self.numberofunits*self.healthpoint
         
     def PurchaseArmors(self):
         return super().PurchaseArmors()
@@ -78,20 +80,27 @@ class Orcs(Faction):
     def PerformAttack(self):
         if self.firstEnemy.aliveness() and self.secondEnemy.aliveness():
             if type(self.firstEnemy)== Elves:
-                self.firstEnemy.ReceiveAttack(self,self.attackpoint*0.7)
-                self.secondEnemy.ReceiveAttack(self,self.attackpoint*0.3)
+                self.firstEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint*0.7)
+                self.secondEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint*0.3)
             elif type(self.secondEnemy)==Elves:
-                self.secondEnemy.ReceiveAttack(self,self.attackpoint*0.7)
-                self.firstEnemy.ReceiveAttack(self,self.attackpoint*0.3)
+                self.secondEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint*0.7)
+                self.firstEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint*0.3)
         elif self.firstEnemy.aliveness() and not self.secondEnemy.aliveness():
-            self.firstEnemy.ReceiveAttack(self,self.attackpoint)
+            self.firstEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint)
         elif  not self.firstEnemy.aliveness() and self.secondEnemy.aliveness():
-            self.secondEnemy.ReceiveAttack(self,self.attackpoint)
+            self.secondEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint)
+        else:
+            print("All Enemies Dead")  
     def ReceiveAttack(self,attacker, damage):
         if type(attacker)==Dwarves:
+            damage=damage*0.8
+            self.numberofunits=self.numberofunits-(damage/self.healthpoint)
             print("Orcs have received attack from Dwarves")
         elif type(attacker)==Elves:
+            damage=damage*0.75
+            self.numberofunits=self.numberofunits-(damage/self.healthpoint)
             print("Orcs have received attack from Elves")
+        self.total_health=self.numberofunits*self.healthpoint
     
     def Print(self):
         print("Stop runnig, you""ll only die tired!\n")
@@ -106,19 +115,38 @@ class Elves(Faction):
     def __init__(self, numberofunits, attackpoint, healthpoint, unitregenerationnumber, name="Elves"):
         super().__init__(numberofunits, attackpoint, healthpoint, unitregenerationnumber, name)
     
-    # def PerformAttack(self):
-    #     if (Dwarves.alivenesss() and not Elves.aliveness()) or (not Dwarves.aliveness() and Elves.aliveness() ):
-    #         damage= numberofunits*attackpoint
-    #     elif Dwarves.aliveness() and Elves.aliveness():
-    #         #attack who?
-    #         damage=numberofunits*attackpoint*0.6
-    #         damage=numberofunits*attackpoint*0.4
+    def PerformAttack(self):
+        #if who?
+        if self.firstEnemy.aliveness() and self.secondEnemy.aliveness():
+            if type(self.firstEnemy)== Orcs:
+                self.firstEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint*0.6)
+                self.secondEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint*0.4*1.5)
+            elif type(self.secondEnemy)==Orcs:
+                self.secondEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint*0.6)
+                self.firstEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint*0.4*1.5)
+        elif self.firstEnemy.aliveness() and not self.secondEnemy.aliveness():
+            if type(self.firstEnemy)== Dwarves:
+                self.firstEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint*1.5)
+            else:
+                self.firstEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint)
+        elif  not self.firstEnemy.aliveness() and self.secondEnemy.aliveness():
+            if type(self.secondEnemy)== Dwarves:
+                self.secondEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint*1.5)
+            else:
+                self.secondEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint)
+        else:
+            print("All Enemies Dead")   
+            
     def ReceiveAttack(self,attacker, damage):
         if type(attacker)==Orcs:
+            damage=damage*1.25
+            self.numberofunits=self.numberofunits-(damage/self.healthpoint)
             print("Elves have received attack from Orcs")
         elif type(attacker)==Dwarves:
+            damage=damage*0.75
+            self.numberofunits=self.numberofunits-(damage/self.healthpoint)
             print("Elves have received attack from Dwarves")
-
+        self.total_health=self.numberofunits*self.healthpoint
    
     def Print(self):
         print("You cannot reach our elegance.")
@@ -145,13 +173,22 @@ class Elves(Faction):
     #     pass
     
 savasci= Orcs(50,30,150,10)
-navin=Dwarves(40,30,150,15)
-thor=Elves(45,35,150,5)
+navin=Dwarves(40,50,150,15)
+thor=Elves(45,35,100,5)
 
 
 
-savasci.AssgnEnemies(navin, thor)
+navin.AssgnEnemies(savasci, thor)
 navin.Print()
-savasci.PerformAttack()
+navin.PerformAttack()
+navin.PerformAttack()
+navin.PerformAttack()
+navin.PerformAttack()
+navin.PerformAttack()
+
+navin.EndTurn()
+navin.Print()
 savasci.EndTurn()
-navin.Print()
+savasci.Print()
+thor.EndTurn()
+thor.Print()
