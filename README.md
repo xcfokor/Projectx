@@ -8,4 +8,5 @@ Additional Project Notes:
     -Unit regeneration number is not used.
     +All the classes are created.
     +All the methods are working.
-    -Ending game and quitting game functions are not created.
+    +The game is ready to play
+    - Before beginnig the turns a name should be given
