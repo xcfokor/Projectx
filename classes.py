@@ -49,7 +49,8 @@ class Dwarves(Faction):
         elif  not self.firstEnemy.aliveness() and self.secondEnemy.aliveness():
             self.secondEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint)
         else:
-            print("All Enemies Dead")  
+            print("All Enemies Dead Game Over")
+            return quit()
         #Performing attack
         
     def Print(self):
@@ -74,7 +75,7 @@ class Dwarves(Faction):
         if self.alive:
             self.healthpoint=self.healthpoint +2*armor_point
             gold=armor_point*3
-            print("Armor sold to Dwarves")
+            print("Armors are trying to sold to Dwarves")
         else:
             print("Armor not sold to Dwarves")
         merchant.SellArmors(self.alive,armor_point,gold)
@@ -85,7 +86,7 @@ class Dwarves(Faction):
         if self.alive:
             self.attackpoint=self.attackpoint+ weapon_point
             gold=weapon_point*10
-            print("Weapon sold to Dwarves")
+            print("Weapons are trying to sold to Dwarves")
         else:
             print("Weapon not sold to Dwarves")
         merchant.SellWeapons(self.alive,weapon_point,gold)
@@ -108,7 +109,9 @@ class Orcs(Faction):
         elif  not self.firstEnemy.aliveness() and self.secondEnemy.aliveness():
             self.secondEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint)
         else:
-            print("All Enemies Dead") 
+            
+            print("All Enemies Dead Game Over")
+            return quit() 
 
     def ReceiveAttack(self,attacker, damage):
         if type(attacker)==Dwarves:
@@ -127,7 +130,7 @@ class Orcs(Faction):
             self.alive=False
     
     def Print(self):
-        print("Stop runnig, you""ll only die tired!\n")
+        print("Stop runnig, you""ll only die tired!")
         return super().Print()
   
     def PurchaseArmors(self,armor_point,merchant):
@@ -136,7 +139,7 @@ class Orcs(Faction):
         if self.alive:
             self.healthpoint=self.healthpoint +3*armor_point
             gold=armor_point*1
-            print("Armor sold to Orcs")
+            print("Armors are trying to sold to Orcs")
         else:
             print("Armor not sold to Orcs")
         merchant.SellArmors(self.alive,armor_point,gold)
@@ -148,7 +151,7 @@ class Orcs(Faction):
         if self.alive:
             self.attackpoint=self.attackpoint+ weapon_point*2
             gold=weapon_point*20
-            print("Weapon sold to Orcs")
+            print("Weapons are trying to sold to Orcs")
         else:
             print("Weapon not sold to Orcs")
         merchant.SellWeapons(self.alive,weapon_point,gold)
@@ -178,7 +181,8 @@ class Elves(Faction):
             else:
                 self.secondEnemy.ReceiveAttack(self,self.numberofunits*self.attackpoint)
         else:
-            print("All Enemies Dead")   
+            print("All Enemies Dead Game Over")
+            return quit()
             
     def ReceiveAttack(self,attacker, damage):
         if type(attacker)==Orcs:
@@ -204,7 +208,7 @@ class Elves(Faction):
         if self.alive:
             self.healthpoint=self.healthpoint +4*armor_point
             gold=armor_point*5
-            print("Armor sold to Elves")
+            print("Armors are trying to sold to Elves")
         else:
             print("Armot not sold to Elves")
         merchant.SellArmors(self.alive,armor_point,gold)
@@ -217,13 +221,12 @@ class Elves(Faction):
         if self.alive:
             self.attackpoint=self.attackpoint+ weapon_point*2
             gold=weapon_point*15
-            print("Weapon sold to Elves")
+            print("Weapons are trying to sold to Elves")
         else:
             print("Weapon not sold to Elves")
         merchant.SellWeapons(self.alive,weapon_point,gold)
         return
         
-
 
 class Merchant():
     def __init__(self,starting_weapon_point=10,starting_armor_point=10):
@@ -273,10 +276,16 @@ class Merchant():
         self.armor_point= self.starting_armor_point
         print("Profit:",self.revenue)
 
+
 def start():
     print("Welcome to The Game\n")
     print("Please define your Orcs name:")
+    global orcs_name
+    global elves_name
+    global dwarves_name
+    global merchant_name
     orcs_name=input()
+    
     ad=orcs_name
     orcs_name=Orcs(50,30,150,10)
     print("Your Orcs' name is: ",ad, "and properties are:")
@@ -305,7 +314,7 @@ def start():
 
     
     
-    def action_selection(orcs_name,dwarves_name,elves_name,merchant_name):
+def action_selection(orcs_name,dwarves_name,elves_name,merchant_name):
         print("------Day Begin------\n","Choose an Action: \n","1   Print Faction information\n","2   Sell weapons\n","3   Sell armors\n","4   End the day\n","5   End the game\n","6   Quit Game\n")
         inp=input()
         if inp=="1":
@@ -326,21 +335,25 @@ def start():
                 print("Choose Weapon Point:")
                 point=input()
                 orcs_name.PurchaseWeapons(int(point),merchant_name)
+                return action_selection(orcs_name,dwarves_name,elves_name,merchant_name)
                 
             elif select=="2":
                 print("Choose Weapon Point:")
                 point=input()
                 dwarves_name.PurchaseWeapons(int(point),merchant_name)
+                return action_selection(orcs_name,dwarves_name,elves_name,merchant_name)
             elif select=="3":
                 print("Choose Weapon Point:")
                 point=input()
                 elves_name.PurchaseWeapons(int(point),merchant_name)
+                return action_selection(orcs_name,dwarves_name,elves_name,merchant_name)
             elif select=="4":
                 print("Choose Weapon Point:")
                 point=input()
                 dwarves_name.PurchaseWeapons(int(point),merchant_name)
                 elves_name.PurchaseWeapons(int(point),merchant_name)
                 orcs_name.PurchaseWeapons(int(point),merchant_name)
+                return action_selection(orcs_name,dwarves_name,elves_name,merchant_name)
             elif select=="5":
                 return action_selection(orcs_name,dwarves_name,elves_name,merchant_name)
             else :
@@ -355,20 +368,24 @@ def start():
                 print("Choose Armor Point:")
                 point=input()
                 orcs_name.PurchaseArmors(int(point),merchant_name)
+                return action_selection(orcs_name,dwarves_name,elves_name,merchant_name)
             elif select=="2":
                 print("Choose Armor Point:")
                 point=input()
                 dwarves_name.PurchaseArmors(int(point),merchant_name)
+                return action_selection(orcs_name,dwarves_name,elves_name,merchant_name)
             elif select=="3":
                 print("Choose Armor Point:")
                 point=input()
                 elves_name.PurchaseArmors(int(point),merchant_name)
+                return action_selection(orcs_name,dwarves_name,elves_name,merchant_name)
             elif select=="4":
                 print("Choose Armor Point:")
                 point=input()
                 dwarves_name.PurchaseArmors(int(point),merchant_name)
                 elves_name.PurchaseArmors(int(point),merchant_name)
                 orcs_name.PurchaseArmors(int(point),merchant_name)
+                return action_selection(orcs_name,dwarves_name,elves_name,merchant_name)
             elif select=="5":
                 return action_selection(orcs_name,dwarves_name,elves_name,merchant_name)
             else :
@@ -377,6 +394,23 @@ def start():
 
         elif inp=="4":
             print("End of the day")
+            orcs_name.PerformAttack()
+            dwarves_name.PerformAttack()
+            elves_name.PerformAttack()
+            elves_name.PerformAttack()
+            elves_name.PerformAttack()
+            elves_name.PerformAttack()
+            elves_name.PerformAttack()
+            elves_name.PerformAttack()
+            elves_name.PerformAttack()
+            elves_name.PerformAttack()
+            elves_name.PerformAttack()
+            elves_name.PerformAttack()
+            elves_name.PerformAttack()
+            elves_name.PerformAttack()
+            elves_name.PerformAttack()
+
+            elves_name.PerformAttack()
             orcs_name.EndTurn()
             print("\n")
             dwarves_name.EndTurn()
@@ -385,6 +419,7 @@ def start():
             print("\n")
             merchant_name.EndTurn()
             print("\n")
+
             
         elif inp=="5":
             print("End of the game")
@@ -403,78 +438,20 @@ def start():
 
             return quit()
             
-    action_selection(orcs_name,dwarves_name,elves_name,merchant_name)
 
 
 start()
-# savasci= Orcs(50,30,150,10)#defining objects
-# navin=Dwarves(40,50,150,15)
-# joker=Dwarves(60,50,80,15)
-# thor=Elves(45,35,100,5)
-# demirci=Merchant()
+orcs_name.AssgnEnemies(dwarves_name,elves_name)
+dwarves_name.AssgnEnemies(elves_name,orcs_name)
+elves_name.AssgnEnemies(orcs_name,dwarves_name)
+i=1
+while True:
+    
+    action_selection(orcs_name,dwarves_name,elves_name,merchant_name)
+    print("End of the day",i)
+    input("Press Enter to continue ...")
+    i=i+1
 
 
-# navin.AssgnEnemies(savasci, thor)#Assign Enemies
-# thor.AssgnEnemies(savasci,navin)
-# thor.AssgnEnemies(navin,joker)
-# savasci.AssgnEnemies(navin,thor)
-# joker.AssgnEnemies(savasci,thor)
 
-# print("BAşlangıç")
-# savasci.Print()
-# thor.Print()
-# navin.Print()
-# joker.Print()
-# demirci.Print()
-
-
-# navin.PerformAttack()
-# thor.PerformAttack()
-# savasci.PerformAttack()
-# navin.PerformAttack()
-# thor.PerformAttack()
-# savasci.PerformAttack()
-# navin.PerformAttack()
-# thor.PerformAttack()
-# savasci.PerformAttack()
-# joker.PerformAttack()
-
-# joker.Print()
-# savasci.Print()
-# thor.Print()
-# navin.Print()
-# demirci.Print()
-
-# savasci.EndTurn()
-# thor.EndTurn()
-# navin.EndTurn()
-# demirci.EndTurn()
-# joker.EndTurn()
-
-# print("satın alımlar")
-
-# savasci.PurchaseWeapons(2,demirci)
-# thor.PurchaseArmors(5,demirci)
-# thor.PurchaseWeapons(6,demirci)
-# navin.PurchaseWeapons(7,demirci)
-
-# savasci.Print()
-# thor.Print()
-# navin.Print()
-# demirci.Print()
-
-# navin.PerformAttack()
-# thor.PerformAttack()
-# savasci.PerformAttack()
-
-# savasci.EndTurn()
-# thor.EndTurn()
-# navin.EndTurn()
-# demirci.EndTurn()
-
-# print("2.tur bitti")
-# savasci.Print()
-# thor.Print()
-# navin.Print()
-# demirci.Print()
 
